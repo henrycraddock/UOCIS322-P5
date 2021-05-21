@@ -1,76 +1,49 @@
 # UOCIS322 - Project 5 #
-Brevet time calculator with AJAX and MongoDB!
 
-## Overview
+Author: Henry Craddock
 
-Store control times from Project 4 in a MongoDB database.
+Contact: henrycraddock@gmail.com, hcraddoc@uoregon.edu
 
-### What is in this repository
+Forked from: https://github.com/alihassanijr/UOCIS322-P5.git
 
-You have a minimal example of `docker-compose` in `DockerMongo`, using which you can connect a Flask app to MongoDB (as demonstrated in class). Refer to the lecture slides for more details on MongoDB and `docker-compose`. Solved `acp_times.py` file will be made available on Canvas under Files after the project due date.
+## Brief description
 
-## Getting started
+Reimplementation of the RUSA ACP controle time calculator with Flask, AJAX, and MongoDB.
 
-You will reuse *your* code from Project 4. Meaning you will get rid of `DockerMongo` (it's just an example, like `minijax` in Project 3), and use ideas from it to make some changes.
+The algorithm for calculating controle times is described here [https://rusa.org/pages/acp-brevet-control-times-calculator](https://rusa.org/pages/acp-brevet-control-times-calculator).
 
-Recall that you created a list of open and close control times using AJAX. In this project, you will add the following:
+We are essentially replacing the calculator here [https://rusa.org/octime_acp.html](https://rusa.org/octime_acp.html).
 
-1. Add two buttons `Submit` and `Display` in the ACP calculator page.
+## ACP controle times
 
-2. Upon clicking the `Submit` button, the control times should be inserted into a MongoDB database.
+That's *"controle"* with an *e*, because it's French, although "control" is also accepted. 
+Controls are points where a rider must obtain proof of passage, and control[e] times are 
+the minimum and maximum times by which the rider must arrive at the location.
 
-3. Upon clicking the `Display` button, the entries from the database should be displayed in a new page.
+The RUSA algorithm has been implemented in the file `acp_times.py`. The algorithm is broken into two
+functions, `time_open()` and `time_close()`, both of which read information passed from the Flask app
+`flask_brevets.py`. Although appearing simple, the algorithm has a few complexities that make it 
+worth explaining. Firstly, the algorithm is based around set minimum and maximum speeds for different
+control distances, a table of which can be found on the RUSA website. Essentially, a control distance
+that falls in some range of the table will adhere to the minimum and maximum speeds in different chunks.
 
-Handle error cases appropriately. For example, Submit should return an error if no control times are input. One can imagine many such cases: you'll come up with as many cases as possible.
+For example: A control point of 550 km will have its first 200 km calculated in the 0-200 km range,
+its second 200 km calculated in the 200-400 km range, and its final 150 km calculated in the 
+400-600 km range. It builds up opening and closing times sequentially. This is implemented through 
+various distance checks and subtractions in `acp_times.py`.
 
-## Tasks
+Additionally, the accepted brevet distances of 200, 300, 400, 600, and 1000 km all have assigned 
+closing times for the entire brevet, even if those times do not correspond exactly to what would 
+be calculated using the algorithm.
 
-As always you'll turn in your `credentials.ini` using Canvas, which will point to your repository on GitHub, which should contain:
+Control times within the first 60 km are subject to different calculations. The closing times are 
+determined by a speed of 20 km/hr plus an additional hour. The additional hour is due to the fact 
+that the 0 km control of the entire brevet closes an hour after it opens, regardless.
 
-* `Dockerfile`
+The `Submit` and `Display` buttons present on the webpage are integrated with a MongoDB database. 
+Each time the `Submit` button is pressed, the current entries in the calculator will replace any existing
+values in the database. Clicking the `Display` button loads the data in the database into a new HTML page.
 
-* `docker-compose.yml`
-
-* The working application.
-
-* A README.md file that includes not only identifying information (your name) but but also a revised, clear specification of the brevet control time calculation rules (you were supposed to do this for Project 4), with additional information regarding this project.
-
-* An automated `nose` test suite with at least 2 test cases: at least one for the time calculator, and another for DB insertion and retrieval.
-
-## Grading Rubric
-
-* If your code works as expected: 100 points. This includes:
-	* Front-end implementation (`Submit` and `Display`).
-	
-	* Back-end implementation (Connecting to MongoDB, insertion and selection).
-	
-	* AJAX interaction between the frontend and backend (AJAX for `Submit` and `Display`).
-	
-	* Updating `README` with a clear specification (including details from Project 4).
-	
-	* Writing at least 2 correct tests using nose (put them in `tests`, follow Project 3 if necessary), and all should pass.
-
-* If the AJAX logic is not working, **10** points will be docked off. 
-
-* If the logic to insert into or retrieve from the database is wrong, **30** points will be docked off.
-
-* If the README is not clear or missing, up to **15** points will be docked off. 
-
-* If any of the two test cases are incorrect or fail, up to **15** points will be docked off. 
-
-* If none of the functionalities work, 30 points will be given assuming 
-    * The `credentials.ini` is submitted with the correct URL of your repo, and
-    * `Dockerfile` is present 
-    * `docker-compose.yml` works/builds without any errors 
-
-* If none of the functionalities work, 30 points will be given assuming `credentials.ini` is submitted with the correct URL of your repo, `Dockerfile` builds and runs without any errors, and `docker-compose.yml` is correct and works.
-
-* If `docker-compose.yml` is missing, doesn't build or doesn't run, 10 points will be docked off.
-    
-* If `Dockerfile` is missing, doesn't build or doesn't run, 10 points will be docked off.
-	
-* If `credentials.ini` is not submitted or the repo is not found, 0 will be assigned.
-
-## Credits
+### Credits
 
 Michal Young, Ram Durairajan, Steven Walton, Joe Istas.
