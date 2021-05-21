@@ -1,0 +1,16 @@
+<html>
+<head>
+    <title>Results</title>
+</head>
+<body>
+    <div>
+            {% for control in items %}
+            <div>
+                <p>{{ control.index }} miles: {{ control.miles }} km: {{ control.km }}
+                    location: {{ control.location }} open: {{ control.open }} close: {{ control.close }}</p>
+                <hl />
+            </div>
+            {% endfor %}
+        </div>
+</body>
+</html>
