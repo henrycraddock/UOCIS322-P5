@@ -22,6 +22,7 @@ CONFIG = config.configuration()
 
 client = MongoClient('mongodb://' + os.environ['MONGODB_HOSTNAME'], 27017)
 db = client.brevetsdb
+
 ###
 # Pages
 ###
@@ -45,12 +46,14 @@ def submit():
     app.logger.debug("Attempting to submit data")
     db.timestable.drop()
     valid = int(request.form['num'])
+    if valid == 0:
+        raise IndexError
     for i in range(valid):
         i_string = str(i)
         item = {
-            'index': request.form['data[' + i_string + '][index]'],
-            'miles': request.form['data[' + i_string + '][miles]'],
-            'km': request.form['data[' + i_string + '][km]'],
+            'index': int(request.form['data[' + i_string + '][index]']),
+            'miles': float(request.form['data[' + i_string + '][miles]']),
+            'km': float(request.form['data[' + i_string + '][km]']),
             'location': request.form['data[' + i_string + '][location]'],
             'open': request.form['data[' + i_string + '][open]'],
             'close': request.form['data[' + i_string + '][close]']
