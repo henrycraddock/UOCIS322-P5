@@ -9,8 +9,9 @@
     <div>
             {% for control in items %}
             <div>
-                <p>{{ control.index }} miles: {{ control.miles }} km: {{ control.km }}
-                    location: {{ control.location }} open: {{ control.open }} close: {{ control.close }}</p>
+                <p>{{ control.index + 1 }}: &ensp; miles: {{ control.miles }} &ensp; km: {{ control.km }}
+                    &ensp; location: {{ control.location }} &ensp; open: {{ control.open }}
+                    &ensp; close: {{ control.close }}</p>
                 <hl />
             </div>
             {% endfor %}
