@@ -23,6 +23,35 @@ CONFIG = config.configuration()
 client = MongoClient('mongodb://' + os.environ['MONGODB_HOSTNAME'], 27017)
 db = client.brevetsdb
 
+
+def db_insert(data):
+    """Helper function to control database insertion"""
+    valid = int(data['num'])
+    if valid == 0:
+        raise IndexError
+    for i in range(valid):
+        i_string = str(i)
+        item = {
+            'index': int(data['data[' + i_string + '][index]']),
+            'miles': float(data['data[' + i_string + '][miles]']),
+            'km': float(data['data[' + i_string + '][km]']),
+            'location': data['data[' + i_string + '][location]'],
+            'open': data['data[' + i_string + '][open]'],
+            'close': data['data[' + i_string + '][close]']
+        }
+        db.timestable.insert_one(item)
+    return
+
+
+def db_find_one(dict):
+    """For testing purposes, find an entry"""
+    return db.timestable.find_one(dict)
+
+
+def db_delete_one(entry):
+    """For testing purposes, delete an entry"""
+    return db.timestable.delete_one(entry)
+
 ###
 # Pages
 ###
@@ -45,6 +74,7 @@ def display():
 def submit():
     app.logger.debug("Attempting to submit data")
     db.timestable.drop()
+    '''
     valid = int(request.form['num'])
     if valid == 0:
         raise IndexError
@@ -59,6 +89,8 @@ def submit():
             'close': request.form['data[' + i_string + '][close]']
         }
         db.timestable.insert_one(item)
+        '''
+    db_insert(request.form)
     return flask.jsonify(output=str(request.form))
 
 
