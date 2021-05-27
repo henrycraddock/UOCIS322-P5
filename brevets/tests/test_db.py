@@ -50,8 +50,8 @@ def test_multiple_entries():
     db_insert(entry_2)
     assert db_find_one({'km': 80.0}) is not None
     assert db_find_one({'km': 200.0}) is not None
-    db_delete_one({'miles': 74.564520})
-    assert db_find_one({'miles': 74.564520}) is None
+    db_delete_one({'km': 120.0})
+    assert db_find_one({'km': 120.0}) is None
     db_delete_one({'open': '2021-01-01T01:46'})
     db_delete_one({'km': 80.0})
     db_delete_one({'close': '2021-01-01T13:30'})
